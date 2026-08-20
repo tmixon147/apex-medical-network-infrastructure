@@ -1,10 +1,11 @@
+[root-README.md](https://github.com/user-attachments/files/31245208/root-README.md)
 # Apex Medical Supplies: Branch Office Network Infrastructure
 
 ## Overview
 
 This repository documents the design, implementation, security hardening, and ongoing evolution of the network infrastructure for Apex Medical Supplies, a fictional 50-user branch office. Each project folder represents a distinct phase of the network's lifecycle, built using Cisco Packet Tracer and documented using a Problem to Constraint to Decision to Outcome framework, the same approach used to justify real infrastructure decisions to stakeholders.
 
-Rather than a series of disconnected exercises, this portfolio tells one continuous story: a branch office that starts with basic connectivity, gets progressively hardened against security threats, and is built out toward a fully segmented, resilient architecture.
+Rather than a series of disconnected exercises, this portfolio tells one continuous story: a branch office that starts with basic connectivity, gets progressively hardened against security threats, and is built out toward a fully segmented, resilient enterprise-style architecture.
 
 ## The Business Scenario
 
@@ -16,21 +17,21 @@ The IT budget is constrained. There is no dedicated on-site network engineer, an
 
 ### [Project 1: Branch Office Network Baseline & Gateway Architecture](./project-1-network-baseline/)
 
-Establishes the foundational LAN and WAN connectivity for the branch. Covers the IP addressing plan, the rationale for separating Layer 2 switching from Layer 3 routing, point-to-point WAN subnetting (/30), and remote management access to the switch. Includes documented troubleshooting of privilege mode errors, STP convergence delay, a subnet boundary misconfiguration, and ARP-related initial packet loss, all verified with end-to-end ping testing and TTL analysis.
+Establishes the foundational LAN and WAN connectivity for the branch. Covers the IP addressing plan, the rationale for separating Layer 2 switching from Layer 3 routing, point-to-point WAN subnetting (/30), and remote management access to the switch. Includes documented troubleshooting of privilege mode errors, STP convergence delay, a subnet boundary misconfiguration, and ARP related initial packet loss, all verified with end-to-end ping testing and TTL analysis.
 
 **Status:** Complete
 
 ### [Project 2: Access-Layer Security Hardening](./project-2-access-security/)
 
-Builds directly on Project 1's baseline by addressing a security audit finding: unsecured access-layer ports in public areas. Implements Port Security (sticky MAC binding, violation shutdown), PortFast, and BPDU Guard on end-user ports, while explicitly excluding the router uplink port from this configuration. Includes a live breach simulation (an unauthorized device is connected and automatically locked out) and a documented rollback and recovery procedure.
+Builds directly on Project 1's baseline by addressing a security audit finding: unsecured access-layer ports in public areas. Implements Port Security (sticky MAC binding, violation shutdown), PortFast, and BPDU Guard on end-user ports, while explicitly excluding the router uplink port from this configuration. Includes a live breach simulation (an unauthorized device is connected and automatically locked out within milliseconds) and a documented two-command rollback and recovery procedure.
 
 **Status:** Complete
 
-### Project 3: VLAN Segmentation & Incident Containment (Upcoming)
+### [Project 3: VLAN Segmentation & Incident Containment](./project-3-vlan-segmentation/)
 
-Addresses the risk of a flat network architecture by segmenting traffic into distinct logical zones (Corporate, Guest Wi-Fi, Server) using 802.1Q VLAN trunking and router subinterfaces, reducing the exposure of HIPAA-relevant traffic to lower-trust network segments. Includes a simulated security incident in which a compromised host is isolated into a quarantine VLAN, with a before/after comparison demonstrating how segmentation limits the blast radius of the breach.
+Addresses the risk of a flat network architecture by segmenting traffic into distinct logical zones: Corporate (VLAN 10), Guest (VLAN 20), Server (VLAN 30), and Quarantine (VLAN 99). Implements 802.1Q trunking on the router uplink and router-on-a-stick inter-VLAN routing via subinterfaces. Includes a simulated security incident in which a compromised host (PC1) is moved to the Quarantine VLAN and re-addressed, with a before and after comparison. Key finding: VLAN segmentation alone limits the Layer 2 attack surface but does not restrict Layer 3 routed traffic, since the router forwards freely between subinterfaces with no ACLs configured. This gap is the explicit driver for Project 5.
 
-**Status:** Planned (Next)
+**Status:** Complete
 
 ### Project 4: Change Management & Rollback Documentation (Upcoming)
 
@@ -40,7 +41,7 @@ Takes a real configuration change against the Project 3 topology, such as enabli
 
 ### Project 5: Infrastructure Resilience (DHCP & ACLs) (Upcoming)
 
-Addresses single points of failure and unrestricted inter-zone access now that the network is segmented. Implements local DHCP address pools per VLAN and Access Control Lists (ACLs) restricting traffic between zones (for example, ensuring Guest Wi-Fi cannot reach the Server VLAN), with verification that legitimate traffic still flows while restricted traffic is blocked.
+Addresses single points of failure and unrestricted inter-zone access now that the network is segmented. Implements local DHCP address pools per VLAN and Access Control Lists (ACLs) restricting traffic between zones, for example ensuring Guest Wi-Fi cannot reach the Server VLAN and the Quarantine VLAN cannot reach Corporate or Server zones. Directly closes the Layer 3 routing gap identified in Project 3.
 
 **Status:** Planned
 
@@ -58,11 +59,14 @@ apex-medical-network-infrastructure/
 ├── project-1-network-baseline/
 │   ├── README.md
 │   └── topology.png
-└── project-2-access-security/
+├── project-2-access-security/
+│   ├── README.md
+│   ├── topology.png
+│   ├── security-violation.png
+│   └── port-recovery.png
+└── project-3-vlan-segmentation/
     ├── README.md
-    ├── topology.png
-    ├── security-violation.png
-    └── port-recovery.png
+    └── topology.png
 ```
 
 ## Tools Used
